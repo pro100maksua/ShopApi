@@ -50,9 +50,9 @@ namespace ShopApi
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 6;
-                options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
             });
 
@@ -83,6 +83,8 @@ namespace ShopApi
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.SeedDatabase();
 
             app.UseAuthentication();
 
