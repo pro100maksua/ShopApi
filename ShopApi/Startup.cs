@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,12 +23,22 @@ namespace ShopApi
         }
 
         public IConfiguration Configuration { get; }
-        
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<AppDbContext>(c => c.UseSqlServer(Configuration.GetConnectionString("Default")));
+
+            services.AddIdentityCore<User>(options =>
+            {
+                options.Password.RequiredLength = 5;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+            });
+            services.AddScoped<IUserStore<User>, UserStore>();
 
             var key = Encoding.ASCII.GetBytes(Configuration["Secret"]);
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -44,19 +55,8 @@ namespace ShopApi
                         ValidateLifetime = true
                     };
                 });
-
-            services.AddIdentityCore<User>();
-
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Password.RequiredLength = 6;
-                options.Password.RequireLowercase = true;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireNonAlphanumeric = false;
-            });
-
-            services.AddScoped<IUserStore<User>, UserStore>();
+            
+            services.AddAutoMapper();
 
             services.AddSwaggerGen(c =>
             {
@@ -75,7 +75,6 @@ namespace ShopApi
                 c.AddSecurityRequirement(security);
             });
         }
-
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {

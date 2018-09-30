@@ -73,9 +73,9 @@ namespace ShopApi.Controllers
                 Role = "Customer"
             };
 
-            await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-            return Ok("Success");
+            return Ok(result);
         }
     }
 }
