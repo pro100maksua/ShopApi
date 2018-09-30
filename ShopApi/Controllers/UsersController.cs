@@ -1,15 +1,8 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using ShopApi.Dtos;
-using ShopApi.Models;
+using ShopApi.Services;
 
 namespace ShopApi.Controllers
 {
@@ -18,62 +11,31 @@ namespace ShopApi.Controllers
     [AllowAnonymous]
     public class UsersController : ControllerBase
     {
-        private readonly IConfiguration _config;
-        private readonly UserManager<User> _userManager;
+        private readonly IUsersService _usersService;
 
-        public UsersController(IConfiguration config, UserManager<User> userManager)
+        public UsersController(IUsersService usersService)
         {
-            _config = config;
-            _userManager = userManager;
+            _usersService = usersService;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginDto loginModel)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginDto loginDto)
         {
-            if (!ModelState.IsValid) return BadRequest("Invalid data.");
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var user = await _userManager.FindByNameAsync(loginModel.UserName);
+            var token = await _usersService.LoginAsync(loginDto);
 
-            if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))
-            {
-                var tokenHandler = new JwtSecurityTokenHandler();
+            if (string.IsNullOrWhiteSpace(token)) return NotFound();
 
-                var key = Encoding.ASCII.GetBytes(_config["Secret"]);
-
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Subject = new ClaimsIdentity(new[]
-                    {
-                        new Claim(ClaimTypes.Name, user.Id),
-                        new Claim(ClaimTypes.Role, user.Role)
-                    }),
-                    Expires = DateTime.UtcNow.AddDays(7),
-                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                        SecurityAlgorithms.HmacSha256Signature)
-                };
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                var tokenString = tokenHandler.WriteToken(token);
-
-                return Ok(tokenString);
-            }
-
-            return NotFound();
-
+            return Ok(token);
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterDto model)
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterDto registerDto)
         {
             if (!ModelState.IsValid) return BadRequest("Invalid data.");
 
-            var user = new User
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = model.UserName,
-                Role = "Customer"
-            };
-
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _usersService.RegisterAsync(registerDto);
 
             return Ok(result);
         }

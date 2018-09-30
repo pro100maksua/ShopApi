@@ -1,6 +1,4 @@
-﻿using ShopApi.Dtos;
-
-namespace ShopApi.Models
+﻿namespace ShopApi.Models
 {
     public class CartItem
     {
@@ -13,12 +11,5 @@ namespace ShopApi.Models
         public string ProductId { get; set; }
 
         public Product Product { get; set; }
-    }
-
-    public class CartItemResponseDto
-    {
-        public int Count { get; set; }
-        
-        public ProductResponseDto Product { get; set; }
     }
 }

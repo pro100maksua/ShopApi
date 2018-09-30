@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ShopApi.Models;
+using ShopApi.Services;
 
 namespace ShopApi.Controllers
 {
@@ -15,13 +10,11 @@ namespace ShopApi.Controllers
     [Authorize(Roles = "Customer, Admin")]
     public class CartController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly ICartService _cartService;
 
-        public CartController(AppDbContext context, IMapper mapper)
+        public CartController(ICartService cartService)
         {
-            _context = context;
-            _mapper = mapper;
+            _cartService = cartService;
         }
 
         [HttpGet]
@@ -29,17 +22,9 @@ namespace ShopApi.Controllers
         {
             var userId = User.Identity.Name;
 
-            var items = await _context.CartItems
-                .Where(i => i.UserId == userId)
-                .Include(i => i.Product)
-                .ThenInclude(p => p.Category)
-                .ToListAsync();
+            var cartDto = await _cartService.GetCartAsync(userId);
 
-            var total = items.Select(i => i.Product.Cost * i.Count).Sum();
-
-            var itemDtos = _mapper.Map<IEnumerable<CartItem>, IEnumerable<CartItemResponseDto>>(items);
-
-            return Ok(new { Items = itemDtos, Total = Math.Round(total, 2) });
+            return Ok(cartDto);
         }
 
         [HttpDelete]
@@ -47,10 +32,9 @@ namespace ShopApi.Controllers
         {
             var userId = User.Identity.Name;
 
-            var items = await _context.CartItems.Where(i => i.UserId == userId).ToListAsync();
+            var deleted = await _cartService.DeleteCartAsync(userId);
 
-            _context.RemoveRange(items);
-            await _context.SaveChangesAsync();
+            if (!deleted) return NotFound();
 
             return Ok();
         }
@@ -60,23 +44,9 @@ namespace ShopApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var item = _context.CartItems.SingleOrDefault(i => i.ProductId == productId);
+            var userId = User.Identity.Name;
 
-            if (item == null)
-            {
-                item = new CartItem
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    UserId = User.Identity.Name,
-                    ProductId = productId
-                };
-
-                _context.CartItems.Add(item);
-            }
-
-            item.Count++;
-
-            await _context.SaveChangesAsync();
+            await _cartService.AddToCartAsync(productId, userId);
 
             return Ok();
         }
@@ -86,13 +56,11 @@ namespace ShopApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var item = _context.CartItems.SingleOrDefault(i => i.ProductId == productId);
+            var userId = User.Identity.Name;
 
-            if (item == null) return NotFound();
+            var removed = await _cartService.RemoveFromCartAsync(productId,userId);
 
-            item.Count--;
-
-            await _context.SaveChangesAsync();
+            if (!removed) return BadRequest();
 
             return Ok();
         }

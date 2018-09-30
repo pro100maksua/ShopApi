@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ShopApi.Models;
+using ShopApi.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace ShopApi
@@ -57,6 +58,11 @@ namespace ShopApi
                 });
             
             services.AddAutoMapper();
+
+            services.AddTransient<ICategoriesService, CategoriesService>();
+            services.AddTransient<IProductsService, ProductsService>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<ICartService, CartService>();
 
             services.AddSwaggerGen(c =>
             {

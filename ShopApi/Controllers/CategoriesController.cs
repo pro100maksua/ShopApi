@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ShopApi.Dtos;
-using ShopApi.Models;
+using ShopApi.Services;
 
 namespace ShopApi.Controllers
 {
@@ -15,13 +10,11 @@ namespace ShopApi.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly ICategoriesService _categoriesService;
 
-        public CategoriesController(AppDbContext context, IMapper mapper)
+        public CategoriesController(ICategoriesService categoriesService)
         {
-            _context = context;
-            _mapper = mapper;
+            _categoriesService = categoriesService;
         }
 
         [HttpGet]
@@ -30,11 +23,9 @@ namespace ShopApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var categories = await Task.Run(() => _context.Categories.Skip(skip).Take(take).ToList());
+            var responseDtos = await _categoriesService.GetAllAsync(skip, take);
 
-            var categoryDtos = _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryResponseDto>>(categories);
-
-            return Ok(categoryDtos);
+            return Ok(responseDtos);
         }
 
         [HttpGet("{id}")]
@@ -43,32 +34,11 @@ namespace ShopApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var category = await _context.Categories.FindAsync(id);
+            var responseDto = await _categoriesService.GetAsync(id);
 
-            if (category == null) return NotFound();
-
-            var responseDto = _mapper.Map<Category, CategoryResponseDto>(category);
+            if (responseDto == null) return NotFound();
 
             return responseDto;
-        }
-
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> PutAsync([FromRoute] string id, [FromBody] CategoryRequestDto requestDto)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var categoryFromDb = await _context.Categories.FindAsync(id);
-
-            if (categoryFromDb == null) return NotFound();
-
-            _mapper.Map(requestDto, categoryFromDb);
-
-            await _context.SaveChangesAsync();
-
-            var responseDto = _mapper.Map<Category, CategoryResponseDto>(categoryFromDb);
-
-            return Ok(responseDto);
         }
 
         [HttpPost]
@@ -77,33 +47,35 @@ namespace ShopApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var category = _mapper.Map<CategoryRequestDto, Category>(requestDto);
-            category.Id = Guid.NewGuid().ToString();
-
-            _context.Categories.Add(category);
-
-            await _context.SaveChangesAsync();
-
-            var responseDto = _mapper.Map<Category, CategoryResponseDto>(category);
+            var responseDto = await _categoriesService.PostAsync(requestDto);
 
             return Ok(responseDto);
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PutAsync([FromRoute] string id, [FromBody] CategoryRequestDto requestDto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var responseDto = await _categoriesService.PutAsync(id, requestDto);
+
+            if (responseDto == null) return NotFound();
+
+            return Ok(responseDto);
+        }
+        
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync([FromRoute] string id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var category = await _context.Categories.FindAsync(id);
+            var deleted = await _categoriesService.DeleteAsync(id);
 
-            if (category == null) return NotFound();
+            if (!deleted) return NotFound();
 
-            _context.Categories.Remove(category);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(id);
+            return Ok();
         }
     }
 }
