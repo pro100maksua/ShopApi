@@ -13,6 +13,8 @@ namespace ShopApi
 
             CreateMap<CategoryRequestDto, Category>();
             CreateMap<Category, CategoryResponseDto>();
+
+            CreateMap<CartItem, CartItemResponseDto>();
         }
     }
 }
