@@ -11,7 +11,7 @@ namespace ShopApi.Services
 {
     public interface IProductsService
     {
-        Task<IEnumerable<ProductResponseDto>> GetAllAsync(int skip, int take);
+        Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequestDto requestDto);
         Task<ProductResponseDto> GetAsync(string id);
         Task<ProductResponseDto> PostAsync(ProductRequestDto requestDto);
         Task<ProductResponseDto> PutProductAsync(string id, ProductRequestDto requestDto);
@@ -29,9 +29,20 @@ namespace ShopApi.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ProductResponseDto>> GetAllAsync(int skip, int take)
+        public async Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequestDto requestDto)
         {
-            var products = await _context.Products.Skip(skip).Take(take).Include(p => p.Category).ToListAsync();
+            IQueryable<Product> query = _context.Products;
+
+            if (requestDto.SearchString.Length >= 3)
+            {
+                query = query.Where(p => p.Name.Contains(requestDto.SearchString));
+            }
+
+            var products = await query
+                .Skip(requestDto.Skip)
+                .Take(requestDto.Take)
+                .Include(p => p.Category)
+                .ToListAsync();
 
             var productDtos = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductResponseDto>>(products);
 

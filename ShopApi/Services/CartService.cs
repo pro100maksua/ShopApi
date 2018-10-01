@@ -57,7 +57,8 @@ namespace ShopApi.Services
 
         public async Task AddToCartAsync(string productId, string userId)
         {
-            var item = _context.CartItems.SingleOrDefault(i => i.ProductId == productId);
+            var item = await _context.CartItems.SingleOrDefaultAsync(
+                i => i.ProductId == productId && i.UserId == userId);
 
             if (item == null)
             {

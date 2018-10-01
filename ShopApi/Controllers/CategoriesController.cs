@@ -19,11 +19,11 @@ namespace ShopApi.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAsync([FromQuery]int skip = 0, [FromQuery] int take = 20)
+        public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequestDto requestDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var responseDtos = await _categoriesService.GetAllAsync(skip, take);
+            var responseDtos = await _categoriesService.GetAllAsync(requestDto);
 
             return Ok(responseDtos);
         }

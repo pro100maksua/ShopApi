@@ -11,7 +11,7 @@ namespace ShopApi.Services
 {
     public interface ICategoriesService
     {
-        Task<IEnumerable<CategoryResponseDto>> GetAllAsync(int skip, int take);
+        Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequestDto requestDto);
         Task<CategoryResponseDto> GetAsync(string id);
         Task<CategoryResponseDto> PostAsync(CategoryRequestDto requestDto);
         Task<CategoryResponseDto> PutAsync(string id, CategoryRequestDto requestDto);
@@ -29,9 +29,19 @@ namespace ShopApi.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync(int skip, int take)
+        public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequestDto requestDto)
         {
-            var categories = await _context.Categories.Skip(skip).Take(take).ToListAsync();
+            IQueryable<Category> query = _context.Categories;
+
+            if (requestDto.SearchString.Length >= 3)
+            {
+                query = query.Where(c => c.Name.Contains(requestDto.SearchString));
+            }
+
+            var categories = await query
+                .Skip(requestDto.Skip)
+                .Take(requestDto.Take)
+                .ToListAsync();
 
             var categoryDtos = _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryResponseDto>>(categories);
 
@@ -77,7 +87,7 @@ namespace ShopApi.Services
 
             return responseDto;
         }
-        
+
         public async Task<bool> DeleteAsync(string id)
         {
             var category = await _context.Categories.FindAsync(id);
