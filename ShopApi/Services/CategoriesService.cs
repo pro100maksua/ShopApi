@@ -62,7 +62,7 @@ namespace ShopApi.Services
         public async Task<CategoryResponseDto> PostAsync(CategoryRequestDto requestDto)
         {
             var category = _mapper.Map<CategoryRequestDto, Category>(requestDto);
-            category.Id = Guid.NewGuid().ToString();
+            category.Id = Guid.NewGuid();
 
             _context.Categories.Add(category);
 

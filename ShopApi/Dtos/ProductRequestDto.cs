@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ShopApi.Dtos
 {
@@ -11,6 +12,6 @@ namespace ShopApi.Dtos
         public double Cost { get; set; }
 
         [Required]
-        public string CategoryId { get; set; }
+        public Guid CategoryId { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace ShopApi
 
         public Task<string> GetUserIdAsync(User user, CancellationToken cancellationToken)
         {
-            return Task.FromResult(user.Id);
+            return Task.FromResult(user.Id.ToString());
         }
 
         public Task<string> GetUserNameAsync(User user, CancellationToken cancellationToken)

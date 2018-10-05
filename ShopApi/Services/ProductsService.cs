@@ -12,10 +12,10 @@ namespace ShopApi.Services
     public interface IProductsService
     {
         Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequestDto requestDto);
-        Task<ProductResponseDto> GetAsync(string id);
+        Task<ProductResponseDto> GetAsync(Guid id);
         Task<ProductResponseDto> PostAsync(ProductRequestDto requestDto);
-        Task<ProductResponseDto> PutProductAsync(string id, ProductRequestDto requestDto);
-        Task<bool> DeleteAsync(string id);
+        Task<ProductResponseDto> PutProductAsync(Guid id, ProductRequestDto requestDto);
+        Task<bool> DeleteAsync(Guid id);
     }
 
     public class ProductsService : IProductsService
@@ -49,7 +49,7 @@ namespace ShopApi.Services
             return productDtos;
         }
 
-        public async Task<ProductResponseDto> GetAsync(string id)
+        public async Task<ProductResponseDto> GetAsync(Guid id)
         {
             var product = await _context.Products
                 .Where(p => p.Id == id)
@@ -66,7 +66,7 @@ namespace ShopApi.Services
         public async Task<ProductResponseDto> PostAsync(ProductRequestDto requestDto)
         {
             var product = _mapper.Map<ProductRequestDto, Product>(requestDto);
-            product.Id = Guid.NewGuid().ToString();
+            product.Id = Guid.NewGuid();
 
             _context.Products.Add(product);
 
@@ -79,7 +79,7 @@ namespace ShopApi.Services
             return responseDto;
         }
 
-        public async Task<ProductResponseDto> PutProductAsync(string id, ProductRequestDto requestDto)
+        public async Task<ProductResponseDto> PutProductAsync(Guid id, ProductRequestDto requestDto)
         {
             var productFromDb = await _context.Products.FindAsync(id);
 
@@ -94,7 +94,7 @@ namespace ShopApi.Services
             return responseDto;
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var product = await _context.Products.FindAsync(id);
 

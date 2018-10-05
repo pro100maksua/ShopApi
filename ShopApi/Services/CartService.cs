@@ -11,10 +11,10 @@ namespace ShopApi.Services
 {
     public interface ICartService
     {
-        Task<CartDto> GetCartAsync(string userId);
-        Task<bool> DeleteCartAsync(string userId);
-        Task AddToCartAsync(string productId, string userId);
-        Task<bool> RemoveFromCartAsync(string productId, string userId);
+        Task<CartDto> GetCartAsync(Guid userId);
+        Task<bool> DeleteCartAsync(Guid userId);
+        Task AddToCartAsync(Guid productId, Guid userId);
+        Task<bool> RemoveFromCartAsync(Guid productId, Guid userId);
     }
 
     public class CartService : ICartService
@@ -28,7 +28,7 @@ namespace ShopApi.Services
             _mapper = mapper;
         }
 
-        public async Task<CartDto> GetCartAsync(string userId)
+        public async Task<CartDto> GetCartAsync(Guid userId)
         {
             var items = await _context.CartItems
                 .Where(i => i.UserId == userId)
@@ -43,7 +43,7 @@ namespace ShopApi.Services
             return new CartDto { Items = itemDtos, Total = Math.Round(total, 2) };
         }
 
-        public async Task<bool> DeleteCartAsync(string userId)
+        public async Task<bool> DeleteCartAsync(Guid userId)
         {
             var items = await _context.CartItems.Where(i => i.UserId == userId).ToListAsync();
 
@@ -55,7 +55,7 @@ namespace ShopApi.Services
             return true;
         }
 
-        public async Task AddToCartAsync(string productId, string userId)
+        public async Task AddToCartAsync(Guid productId, Guid userId)
         {
             var item = await _context.CartItems.SingleOrDefaultAsync(
                 i => i.ProductId == productId && i.UserId == userId);
@@ -64,7 +64,7 @@ namespace ShopApi.Services
             {
                 item = new CartItem
                 {
-                    Id = Guid.NewGuid().ToString(),
+                    Id = Guid.NewGuid(),
                     UserId = userId,
                     ProductId = productId
                 };
@@ -77,7 +77,7 @@ namespace ShopApi.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> RemoveFromCartAsync(string productId, string userId)
+        public async Task<bool> RemoveFromCartAsync(Guid productId, Guid userId)
         {
             var item = await _context.CartItems.SingleOrDefaultAsync(
                 i => i.ProductId == productId && i.UserId == userId);

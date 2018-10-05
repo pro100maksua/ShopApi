@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ShopApi.Dtos;
+using ShopApi.Enums;
 using ShopApi.Models;
 
 namespace ShopApi.Services
@@ -41,7 +42,7 @@ namespace ShopApi.Services
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
-                        new Claim(ClaimTypes.Name, user.Id),
+                        new Claim(ClaimTypes.Name, user.Id.ToString()),
                         new Claim(ClaimTypes.Role, user.Role)
                     }),
                     Expires = DateTime.UtcNow.AddDays(1),
@@ -62,9 +63,9 @@ namespace ShopApi.Services
         {
             var user = new User
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = Guid.NewGuid(),
                 UserName = registerDto.UserName,
-                Role = "Customer"
+                Role = Role.Admin.ToString()
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);

@@ -9,5 +9,9 @@ namespace ShopApi.Dtos
 
         [Required]
         public string Password { get; set; }
+
+        [Compare("Password")]
+        [Required]
+        public string ConfirmPassword { get; set; }
     }
 }

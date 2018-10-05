@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopApi.Dtos;
@@ -30,7 +31,7 @@ namespace ShopApi.Controllers
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ProductResponseDto>> GetAsync([FromRoute] string id)
+        public async Task<ActionResult<ProductResponseDto>> GetAsync([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -54,7 +55,7 @@ namespace ShopApi.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> PutProductAsync([FromRoute] string id, [FromBody] ProductRequestDto requestDto)
+        public async Task<IActionResult> PutProductAsync([FromRoute] Guid id, [FromBody] ProductRequestDto requestDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -67,7 +68,7 @@ namespace ShopApi.Controllers
         
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteAsync([FromRoute] string id)
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
