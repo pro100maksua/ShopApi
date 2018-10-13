@@ -29,7 +29,7 @@ namespace ShopApi
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddDbContext<AppDbContext>(c => c.UseSqlServer(Configuration.GetConnectionString("Default")));
+            services.AddDbContext<AppDbContext>(c => c.UseSqlServer(Configuration.GetConnectionString("Docker")));
 
             services.AddIdentityCore<User>(options =>
             {
@@ -56,7 +56,7 @@ namespace ShopApi
                         ValidateLifetime = true
                     };
                 });
-            
+
             services.AddAutoMapper();
 
             services.AddTransient<ICategoriesService, CategoriesService>();

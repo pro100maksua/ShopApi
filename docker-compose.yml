@@ -1,0 +1,15 @@
+version: "3.3"
+services:
+    api:
+        image: shopapi
+        build: .
+        ports:
+            - "8080:80"
+        depends_on:
+            - database
+    database:
+        image: mcr.microsoft.com/mssql/server
+        environment:
+          ACCEPT_EULA: "Y"
+          SA_PASSWORD: "qwe123RTY!"
+          MSSQL_PID: "Express"
