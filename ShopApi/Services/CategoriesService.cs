@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ShopApi.Dtos;
+using ShopApi.Dtos.Requests;
+using ShopApi.Dtos.Responses;
 using ShopApi.Models;
 
 namespace ShopApi.Services
 {
     public interface ICategoriesService
     {
-        Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequestDto requestDto);
+        Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequest request);
         Task<CategoryResponseDto> GetAsync(Guid id);
         Task<CategoryResponseDto> PostAsync(CategoryRequestDto requestDto);
         Task<CategoryResponseDto> PutAsync(Guid id, CategoryRequestDto requestDto);
@@ -29,15 +30,15 @@ namespace ShopApi.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequestDto requestDto)
+        public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequest request)
         {
-            var isSearchEmpty = string.IsNullOrWhiteSpace(requestDto.SearchString);
+            var isSearchEmpty = string.IsNullOrWhiteSpace(request.SearchString);
 
             var categories = await _context.Categories
                 .AsNoTracking()
-                .Where(c => isSearchEmpty || c.Name.Contains(requestDto.SearchString))
-                .Skip(requestDto.Skip)
-                .Take(requestDto.Take)
+                .Where(c => isSearchEmpty || c.Name.Contains(request.SearchString))
+                .Skip(request.Skip)
+                .Take(request.Take)
                 .ToListAsync();
 
             var categoryDtos = _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryResponseDto>>(categories);

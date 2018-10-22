@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using ShopApi.Dtos;
+using ShopApi.Dtos.Requests;
 using ShopApi.Enums;
 using ShopApi.Models;
 

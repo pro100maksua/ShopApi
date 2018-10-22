@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApi.Dtos;
+using ShopApi.Dtos.Requests;
 using ShopApi.Services;
 
 namespace ShopApi.Controllers

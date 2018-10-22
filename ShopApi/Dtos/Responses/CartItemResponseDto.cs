@@ -1,4 +1,4 @@
-﻿namespace ShopApi.Dtos
+﻿namespace ShopApi.Dtos.Responses
 {
     public class CartItemResponseDto
     {

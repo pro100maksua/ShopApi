@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using AutoMapper;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +28,12 @@ namespace ShopApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation(c =>
+                {
+                    c.RegisterValidatorsFromAssemblyContaining<Startup>();
+                    c.LocalizationEnabled = false;
+                });
 
             services.AddDbContext<AppDbContext>(c => c.UseSqlServer(Configuration.GetConnectionString("Default")));
 

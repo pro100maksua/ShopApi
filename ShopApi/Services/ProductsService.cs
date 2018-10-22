@@ -4,14 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ShopApi.Dtos;
+using ShopApi.Dtos.Requests;
+using ShopApi.Dtos.Responses;
 using ShopApi.Models;
 
 namespace ShopApi.Services
 {
     public interface IProductsService
     {
-        Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequestDto requestDto);
+        Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequest request);
         Task<ProductResponseDto> GetAsync(Guid id);
         Task<ProductResponseDto> PostAsync(ProductRequestDto requestDto);
         Task<ProductResponseDto> PutProductAsync(Guid id, ProductRequestDto requestDto);
@@ -29,15 +30,15 @@ namespace ShopApi.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequestDto requestDto)
+        public async Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequest request)
         {
-            var isSearchEmtpy = string.IsNullOrWhiteSpace(requestDto.SearchString);
+            var isSearchEmtpy = string.IsNullOrWhiteSpace(request.SearchString);
 
             var products = await _context.Products
                 .AsNoTracking()
-                .Where(p => isSearchEmtpy || p.Name.Contains(requestDto.SearchString))
-                .Skip(requestDto.Skip)
-                .Take(requestDto.Take)
+                .Where(p => isSearchEmtpy || p.Name.Contains(request.SearchString))
+                .Skip(request.Skip)
+                .Take(request.Take)
                 .Include(p => p.Category)
                 .ToListAsync();
 

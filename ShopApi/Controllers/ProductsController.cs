@@ -2,7 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApi.Dtos;
+using ShopApi.Dtos.Requests;
+using ShopApi.Dtos.Responses;
 using ShopApi.Services;
 
 namespace ShopApi.Controllers
@@ -20,11 +21,11 @@ namespace ShopApi.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequestDto requestDto)
+        public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequest request)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var productDtos = await _productsService.GetAllAsync(requestDto);
+            var productDtos = await _productsService.GetAllAsync(request);
 
             return Ok(productDtos);
         }

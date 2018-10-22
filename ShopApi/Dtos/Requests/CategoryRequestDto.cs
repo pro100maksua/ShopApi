@@ -1,10 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace ShopApi.Dtos
+﻿namespace ShopApi.Dtos.Requests
 {
     public class CategoryRequestDto
     {
-        [Required]
         public string Name { get; set; }
     }
 }

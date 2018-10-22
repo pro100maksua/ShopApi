@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace ShopApi.Dtos
+namespace ShopApi.Dtos.Responses
 {
-    public class CartDto
+    public class CartResponseDto
     {
         public IEnumerable<CartItemResponseDto> Items { get; set; }
 

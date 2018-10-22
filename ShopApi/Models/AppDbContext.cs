@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShopApi.Models;
 
-namespace ShopApi
+namespace ShopApi.Models
 {
     public class AppDbContext : DbContext
     {

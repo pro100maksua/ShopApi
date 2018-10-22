@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ShopApi.Dtos;
+using ShopApi.Dtos.Responses;
 using ShopApi.Models;
 
 namespace ShopApi.Services
 {
     public interface ICartService
     {
-        Task<CartDto> GetCartAsync(Guid userId);
+        Task<CartResponseDto> GetCartAsync(Guid userId);
         Task<bool> DeleteCartAsync(Guid userId);
         Task AddToCartAsync(Guid productId, Guid userId);
         Task<bool> RemoveFromCartAsync(Guid productId, Guid userId);
@@ -28,7 +28,7 @@ namespace ShopApi.Services
             _mapper = mapper;
         }
 
-        public async Task<CartDto> GetCartAsync(Guid userId)
+        public async Task<CartResponseDto> GetCartAsync(Guid userId)
         {
             var items = await _context.CartItems
                 .AsNoTracking()
@@ -41,7 +41,7 @@ namespace ShopApi.Services
 
             var itemDtos = _mapper.Map<IEnumerable<CartItem>, IEnumerable<CartItemResponseDto>>(items);
 
-            return new CartDto { Items = itemDtos, Total = Math.Round(total, 2) };
+            return new CartResponseDto { Items = itemDtos, Total = Math.Round(total, 2) };
         }
 
         public async Task<bool> DeleteCartAsync(Guid userId)

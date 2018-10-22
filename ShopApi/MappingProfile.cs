@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using ShopApi.Dtos;
+using ShopApi.Dtos.Requests;
+using ShopApi.Dtos.Responses;
 using ShopApi.Models;
 
 namespace ShopApi
