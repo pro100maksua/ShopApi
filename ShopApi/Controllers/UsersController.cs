@@ -19,11 +19,11 @@ namespace ShopApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginDto loginDto)
+        public async Task<IActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var token = await _usersService.LoginAsync(loginDto);
+            var token = await _usersService.LoginAsync(loginRequest);
 
             if (string.IsNullOrWhiteSpace(token)) return NotFound();
 
@@ -31,11 +31,11 @@ namespace ShopApi.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterDto registerDto)
+        public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequest registerRequest)
         {
             if (!ModelState.IsValid) return BadRequest("Invalid data.");
 
-            var result = await _usersService.RegisterAsync(registerDto);
+            var result = await _usersService.RegisterAsync(registerRequest);
 
             return Ok(result);
         }

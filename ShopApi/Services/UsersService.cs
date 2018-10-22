@@ -14,8 +14,8 @@ namespace ShopApi.Services
 {
     public interface IUsersService
     {
-        Task<string> LoginAsync(LoginDto loginDto);
-        Task<IdentityResult> RegisterAsync(RegisterDto registerDto);
+        Task<string> LoginAsync(LoginRequest loginRequest);
+        Task<IdentityResult> RegisterAsync(RegisterRequest registerRequest);
     }
 
     public class UsersService : IUsersService
@@ -29,11 +29,11 @@ namespace ShopApi.Services
             _userManager = userManager;
         }
 
-        public async Task<string> LoginAsync(LoginDto loginDto)
+        public async Task<string> LoginAsync(LoginRequest loginRequest)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.UserName);
+            var user = await _userManager.FindByNameAsync(loginRequest.UserName);
 
-            if (user != null && await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            if (user != null && await _userManager.CheckPasswordAsync(user, loginRequest.Password))
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
 
@@ -59,16 +59,16 @@ namespace ShopApi.Services
             return string.Empty;
         }
 
-        public async Task<IdentityResult> RegisterAsync(RegisterDto registerDto)
+        public async Task<IdentityResult> RegisterAsync(RegisterRequest registerRequest)
         {
             var user = new User
             {
                 Id = Guid.NewGuid(),
-                UserName = registerDto.UserName,
-                Role = Role.Admin.ToString()
+                UserName = registerRequest.UserName,
+                Role = Role.Customer.ToString()
             };
 
-            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            var result = await _userManager.CreateAsync(user, registerRequest.Password);
 
             return result;
         }

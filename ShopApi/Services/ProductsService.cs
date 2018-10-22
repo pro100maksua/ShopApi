@@ -31,14 +31,11 @@ namespace ShopApi.Services
 
         public async Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequestDto requestDto)
         {
-            IQueryable<Product> query = _context.Products;
+            var isSearchEmtpy = string.IsNullOrWhiteSpace(requestDto.SearchString);
 
-            if (requestDto.SearchString.Length >= 3)
-            {
-                query = query.Where(p => p.Name.Contains(requestDto.SearchString));
-            }
-
-            var products = await query
+            var products = await _context.Products
+                .AsNoTracking()
+                .Where(p => isSearchEmtpy || p.Name.Contains(requestDto.SearchString))
                 .Skip(requestDto.Skip)
                 .Take(requestDto.Take)
                 .Include(p => p.Category)
@@ -72,7 +69,7 @@ namespace ShopApi.Services
 
             await _context.SaveChangesAsync();
 
-            product.Category = await _context.Categories.FindAsync(product.CategoryId);
+            product.Category = await _context.Categories.SingleOrDefaultAsync(c => c.Id == product.CategoryId);
 
             var responseDto = _mapper.Map<Product, ProductResponseDto>(product);
 
@@ -81,7 +78,7 @@ namespace ShopApi.Services
 
         public async Task<ProductResponseDto> PutProductAsync(Guid id, ProductRequestDto requestDto)
         {
-            var productFromDb = await _context.Products.FindAsync(id);
+            var productFromDb = await _context.Products.SingleOrDefaultAsync(p => p.Id == id);
 
             if (productFromDb == null) return null;
 
@@ -96,7 +93,7 @@ namespace ShopApi.Services
 
         public async Task<bool> DeleteAsync(Guid id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.SingleOrDefaultAsync(p => p.Id == id);
 
             if (product == null) return false;
 

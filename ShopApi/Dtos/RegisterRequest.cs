@@ -2,12 +2,16 @@
 
 namespace ShopApi.Dtos
 {
-    public class LoginDto
+    public class RegisterRequest
     {
         [Required]
         public string UserName { get; set; }
 
         [Required]
         public string Password { get; set; }
+
+        [Compare("Password")]
+        [Required]
+        public string ConfirmPassword { get; set; }
     }
 }

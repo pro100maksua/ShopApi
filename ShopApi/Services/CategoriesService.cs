@@ -12,10 +12,10 @@ namespace ShopApi.Services
     public interface ICategoriesService
     {
         Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequestDto requestDto);
-        Task<CategoryResponseDto> GetAsync(string id);
+        Task<CategoryResponseDto> GetAsync(Guid id);
         Task<CategoryResponseDto> PostAsync(CategoryRequestDto requestDto);
-        Task<CategoryResponseDto> PutAsync(string id, CategoryRequestDto requestDto);
-        Task<bool> DeleteAsync(string id);
+        Task<CategoryResponseDto> PutAsync(Guid id, CategoryRequestDto requestDto);
+        Task<bool> DeleteAsync(Guid id);
     }
 
     public class CategoriesService : ICategoriesService
@@ -31,14 +31,11 @@ namespace ShopApi.Services
 
         public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequestDto requestDto)
         {
-            IQueryable<Category> query = _context.Categories;
+            var isSearchEmpty = string.IsNullOrWhiteSpace(requestDto.SearchString);
 
-            if (requestDto.SearchString.Length >= 3)
-            {
-                query = query.Where(c => c.Name.Contains(requestDto.SearchString));
-            }
-
-            var categories = await query
+            var categories = await _context.Categories
+                .AsNoTracking()
+                .Where(c => isSearchEmpty || c.Name.Contains(requestDto.SearchString))
                 .Skip(requestDto.Skip)
                 .Take(requestDto.Take)
                 .ToListAsync();
@@ -48,9 +45,9 @@ namespace ShopApi.Services
             return categoryDtos;
         }
 
-        public async Task<CategoryResponseDto> GetAsync(string id)
+        public async Task<CategoryResponseDto> GetAsync(Guid id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories.SingleOrDefaultAsync(c => c.Id == id);
 
             if (category == null) return null;
 
@@ -73,9 +70,9 @@ namespace ShopApi.Services
             return responseDto;
         }
 
-        public async Task<CategoryResponseDto> PutAsync(string id, CategoryRequestDto requestDto)
+        public async Task<CategoryResponseDto> PutAsync(Guid id, CategoryRequestDto requestDto)
         {
-            var categoryFromDb = await _context.Categories.FindAsync(id);
+            var categoryFromDb = await _context.Categories.SingleOrDefaultAsync(c => c.Id == id);
 
             if (categoryFromDb == null) return null;
 
@@ -88,9 +85,9 @@ namespace ShopApi.Services
             return responseDto;
         }
 
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories.SingleOrDefaultAsync(c => c.Id == id);
 
             if (category == null) return false;
 

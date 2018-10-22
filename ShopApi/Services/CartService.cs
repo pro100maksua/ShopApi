@@ -31,6 +31,7 @@ namespace ShopApi.Services
         public async Task<CartDto> GetCartAsync(Guid userId)
         {
             var items = await _context.CartItems
+                .AsNoTracking()
                 .Where(i => i.UserId == userId)
                 .Include(i => i.Product)
                 .ThenInclude(p => p.Category)
@@ -45,7 +46,9 @@ namespace ShopApi.Services
 
         public async Task<bool> DeleteCartAsync(Guid userId)
         {
-            var items = await _context.CartItems.Where(i => i.UserId == userId).ToListAsync();
+            var items = await _context.CartItems
+                .Where(i => i.UserId == userId)
+                .ToListAsync();
 
             if (!items.Any()) return false;
 
