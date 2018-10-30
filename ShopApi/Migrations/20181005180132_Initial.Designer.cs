@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShopApi;
-using ShopApi.Models;
+using ShopApi.Data;
 
 namespace ShopApi.Migrations
 {

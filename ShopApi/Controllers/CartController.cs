@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApi.Services;
+using ShopApi.Logic.Interfaces;
 
 namespace ShopApi.Controllers
 {
@@ -33,9 +33,8 @@ namespace ShopApi.Controllers
         {
             var userId = Guid.Parse(User.Identity.Name);
 
-            var deleted = await _cartService.DeleteCartAsync(userId);
 
-            if (!deleted) return NotFound();
+            await _cartService.DeleteCartAsync(userId);
 
             return Ok();
         }
@@ -59,9 +58,7 @@ namespace ShopApi.Controllers
 
             var userId = Guid.Parse(User.Identity.Name);
 
-            var removed = await _cartService.RemoveFromCartAsync(productId, userId);
-
-            if (!removed) return BadRequest();
+            await _cartService.RemoveFromCartAsync(productId, userId);
 
             return Ok();
         }

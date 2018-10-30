@@ -11,8 +11,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using ShopApi.Models;
-using ShopApi.Services;
+using ShopApi.Data;
+using ShopApi.Data.Interfaces;
+using ShopApi.Data.Models;
+using ShopApi.Data.Repositories;
+using ShopApi.Logic.Interfaces;
+using ShopApi.Logic.Services;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace ShopApi
@@ -69,6 +73,11 @@ namespace ShopApi
             services.AddTransient<IProductsService, ProductsService>();
             services.AddTransient<IUsersService, UsersService>();
             services.AddTransient<ICartService, CartService>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<ICategoryRepository, CategoryRepository>();
+            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<ICartItemRepository, CartItemRepository>();
 
             services.AddSwaggerGen(c =>
             {

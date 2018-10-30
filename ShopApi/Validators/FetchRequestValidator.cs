@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using ShopApi.Dtos.Requests;
+using ShopApi.Logic.Dtos.Requests;
 
 namespace ShopApi.Validators
 {

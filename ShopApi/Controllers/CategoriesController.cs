@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApi.Dtos.Requests;
-using ShopApi.Dtos.Responses;
-using ShopApi.Services;
+using ShopApi.Logic.Dtos.Requests;
+using ShopApi.Logic.Dtos.Responses;
+using ShopApi.Logic.Interfaces;
 
 namespace ShopApi.Controllers
 {
@@ -66,16 +66,14 @@ namespace ShopApi.Controllers
 
             return Ok(responseDto);
         }
-        
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var deleted = await _categoriesService.DeleteAsync(id);
-
-            if (!deleted) return NotFound();
+            await _categoriesService.DeleteAsync(id);
 
             return Ok();
         }

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopApi.Dtos.Requests;
-using ShopApi.Services;
+using ShopApi.Logic.Dtos.Requests;
+using ShopApi.Logic.Interfaces;
 
 namespace ShopApi.Controllers
 {
