@@ -13,6 +13,8 @@ namespace ShopApi.Controllers
     {
         private readonly ICartService _cartService;
 
+        public Guid UserId => Guid.Parse(User.Identity.Name);
+
         public CartController(ICartService cartService)
         {
             _cartService = cartService;
@@ -21,9 +23,7 @@ namespace ShopApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCartAsync()
         {
-            var userId = Guid.Parse(User.Identity.Name);
-
-            var cartDto = await _cartService.GetCartAsync(userId);
+            var cartDto = await _cartService.GetCartAsync(UserId);
 
             return Ok(cartDto);
         }
@@ -31,10 +31,7 @@ namespace ShopApi.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteCartAsync()
         {
-            var userId = Guid.Parse(User.Identity.Name);
-
-
-            await _cartService.DeleteCartAsync(userId);
+            await _cartService.DeleteCartAsync(UserId);
 
             return Ok();
         }
@@ -42,11 +39,7 @@ namespace ShopApi.Controllers
         [HttpPut("add")]
         public async Task<IActionResult> AddToCartAsync(Guid productId)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var userId = Guid.Parse(User.Identity.Name);
-
-            await _cartService.AddToCartAsync(productId, userId);
+            await _cartService.AddToCartAsync(productId, UserId);
 
             return Ok();
         }
@@ -54,11 +47,7 @@ namespace ShopApi.Controllers
         [HttpPut("remove")]
         public async Task<IActionResult> RemoveFromCartAsync(Guid productId)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var userId = Guid.Parse(User.Identity.Name);
-
-            await _cartService.RemoveFromCartAsync(productId, userId);
+            await _cartService.RemoveFromCartAsync(productId, UserId);
 
             return Ok();
         }

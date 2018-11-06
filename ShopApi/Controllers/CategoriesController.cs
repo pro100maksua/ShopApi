@@ -23,8 +23,6 @@ namespace ShopApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequest request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var responseDtos = await _categoriesService.GetAllAsync(request);
 
             return Ok(responseDtos);
@@ -34,11 +32,12 @@ namespace ShopApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<CategoryResponseDto>> GetAsync([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var responseDto = await _categoriesService.GetAsync(id);
 
-            if (responseDto == null) return NotFound();
+            if (responseDto == null)
+            {
+                return NotFound();
+            }
 
             return responseDto;
         }
@@ -47,8 +46,6 @@ namespace ShopApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PostAsync([FromBody] CategoryRequestDto requestDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var responseDto = await _categoriesService.PostAsync(requestDto);
 
             return Ok(responseDto);
@@ -58,11 +55,12 @@ namespace ShopApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> PutAsync([FromRoute] Guid id, [FromBody] CategoryRequestDto requestDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var responseDto = await _categoriesService.PutAsync(id, requestDto);
 
-            if (responseDto == null) return NotFound();
+            if (responseDto == null)
+            {
+                return NotFound();
+            }
 
             return Ok(responseDto);
         }
@@ -71,8 +69,6 @@ namespace ShopApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             await _categoriesService.DeleteAsync(id);
 
             return Ok();

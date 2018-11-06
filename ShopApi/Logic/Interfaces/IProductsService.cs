@@ -11,7 +11,7 @@ namespace ShopApi.Logic.Interfaces
         Task<IEnumerable<ProductResponseDto>> GetAllAsync(FetchRequest request);
         Task<ProductResponseDto> GetAsync(Guid id);
         Task<ProductResponseDto> PostAsync(ProductRequestDto requestDto);
-        Task<ProductResponseDto> PutProductAsync(Guid id, ProductRequestDto requestDto);
+        Task<ProductResponseDto> PutAsync(Guid id, ProductRequestDto requestDto);
         Task DeleteAsync(Guid id);
     }
 }

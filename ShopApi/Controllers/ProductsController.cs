@@ -23,8 +23,6 @@ namespace ShopApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequest request)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var productDtos = await _productsService.GetAllAsync(request);
 
             return Ok(productDtos);
@@ -34,45 +32,45 @@ namespace ShopApi.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<ProductResponseDto>> GetAsync([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var responseDto = await _productsService.GetAsync(id);
-
-            if (responseDto == null) return NotFound();
+            if (responseDto == null)
+            {
+                return NotFound();
+            }
 
             return responseDto;
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> PostAsync([FromBody] ProductRequestDto requestDto)
+        public async Task<ActionResult<ProductResponseDto>> PostAsync([FromBody] ProductRequestDto requestDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             var responseDto = await _productsService.PostAsync(requestDto);
+            if (responseDto == null)
+            {
+                return BadRequest("Duplicate name.");
+            }
 
-            return Ok(responseDto);
+            return responseDto;
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> PutProductAsync([FromRoute] Guid id, [FromBody] ProductRequestDto requestDto)
+        public async Task<ActionResult<ProductResponseDto>> PutAsync([FromRoute] Guid id, [FromBody] ProductRequestDto requestDto)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var responseDto = await _productsService.PutAsync(id, requestDto);
+            if (responseDto == null)
+            {
+                return NotFound();
+            }
 
-            var responseDto = await _productsService.PutProductAsync(id, requestDto);
-
-            if (responseDto == null) return NotFound();
-
-            return Ok(responseDto);
+            return responseDto;
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             await _productsService.DeleteAsync(id);
 
             return Ok();

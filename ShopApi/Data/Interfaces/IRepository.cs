@@ -18,4 +18,4 @@ namespace ShopApi.Data.Interfaces
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
     }
-}
+}   

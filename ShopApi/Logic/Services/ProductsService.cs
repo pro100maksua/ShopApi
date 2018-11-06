@@ -37,8 +37,10 @@ namespace ShopApi.Logic.Services
         public async Task<ProductResponseDto> GetAsync(Guid id)
         {
             var product = await _unitOfWork.ProductRepository.GetWithCategoryAsync(id);
-
-            if (product == null) return null;
+            if (product == null)
+            {
+                return null;
+            }
 
             var responseDto = _mapper.Map<Product, ProductResponseDto>(product);
 
@@ -47,6 +49,12 @@ namespace ShopApi.Logic.Services
 
         public async Task<ProductResponseDto> PostAsync(ProductRequestDto requestDto)
         {
+            var duplicate = await _unitOfWork.ProductRepository.FindAsync(p => p.Name == requestDto.Name);
+            if (duplicate != null)
+            {
+                return null;
+            }
+
             var product = _mapper.Map<ProductRequestDto, Product>(requestDto);
             product.Id = Guid.NewGuid();
 
@@ -54,22 +62,23 @@ namespace ShopApi.Logic.Services
             await _unitOfWork.SaveAsync();
 
             product.Category = await _unitOfWork.CategoryRepository.GetAsync(product.CategoryId);
-
             var responseDto = _mapper.Map<Product, ProductResponseDto>(product);
 
             return responseDto;
         }
 
-        public async Task<ProductResponseDto> PutProductAsync(Guid id, ProductRequestDto requestDto)
+        public async Task<ProductResponseDto> PutAsync(Guid id, ProductRequestDto requestDto)
         {
             var productFromDb = await _unitOfWork.ProductRepository.GetAsync(id);
-            
-            if (productFromDb == null) return null;
+            if (productFromDb == null || productFromDb.Name == requestDto.Name)
+            {
+                return null;
+            }
 
             _mapper.Map(requestDto, productFromDb);
-            
             await _unitOfWork.SaveAsync();
 
+            productFromDb.Category = await _unitOfWork.CategoryRepository.GetAsync(productFromDb.CategoryId);
             var responseDto = _mapper.Map<Product, ProductResponseDto>(productFromDb);
 
             return responseDto;

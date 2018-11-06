@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -17,4 +17,7 @@
     <PackageReference Include="swashbuckle.aspnetcore" Version="3.0.0" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <ProjectGuid>6992D29C-0BB6-43B5-B6F1-D8E0C84EB02E</ProjectGuid>
+  </PropertyGroup>
 </Project>
