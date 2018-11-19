@@ -26,7 +26,6 @@ namespace ShopApi.Logic.Services
         {
             var isSearchEmpty = string.IsNullOrWhiteSpace(request.SearchString);
             Expression<Func<Product, bool>> filter = c => isSearchEmpty || c.Name.Contains(request.SearchString);
-
             var products = await _unitOfWork.ProductRepository.GetAllAsync(request.Skip, request.Take, filter);
 
             var productDtos = _mapper.Map<IEnumerable<Product>, IEnumerable<ProductResponseDto>>(products);
@@ -47,12 +46,15 @@ namespace ShopApi.Logic.Services
             return responseDto;
         }
 
-        public async Task<ProductResponseDto> PostAsync(ProductRequestDto requestDto)
+        public async Task<Result<ProductResponseDto>> PostAsync(ProductRequestDto requestDto)
         {
-            var duplicate = await _unitOfWork.ProductRepository.FindAsync(p => p.Name == requestDto.Name);
-            if (duplicate != null)
+            var response = new Result<ProductResponseDto>();
+
+            var isDuplicate = await _unitOfWork.ProductRepository.ExistsAsync(p => p.Name == requestDto.Name);
+            if (isDuplicate)
             {
-                return null;
+                response.Errors.Add($"Product name '{requestDto.Name}' is already taken.");
+                return response;
             }
 
             var product = _mapper.Map<ProductRequestDto, Product>(requestDto);
@@ -64,15 +66,23 @@ namespace ShopApi.Logic.Services
             product.Category = await _unitOfWork.CategoryRepository.GetAsync(product.CategoryId);
             var responseDto = _mapper.Map<Product, ProductResponseDto>(product);
 
-            return responseDto;
+            response.Data = responseDto;
+            return response;
         }
 
-        public async Task<ProductResponseDto> PutAsync(Guid id, ProductRequestDto requestDto)
+        public async Task<Result<ProductResponseDto>> PutAsync(Guid id, ProductRequestDto requestDto)
         {
             var productFromDb = await _unitOfWork.ProductRepository.GetAsync(id);
-            if (productFromDb == null || productFromDb.Name == requestDto.Name)
+            if (productFromDb == null)
             {
                 return null;
+            }
+
+            var response = new Result<ProductResponseDto>();
+            if (productFromDb.Name == requestDto.Name)
+            {
+                response.Errors.Add($"Product name '{requestDto.Name}' is already taken.");
+                return response;
             }
 
             _mapper.Map(requestDto, productFromDb);
@@ -81,14 +91,21 @@ namespace ShopApi.Logic.Services
             productFromDb.Category = await _unitOfWork.CategoryRepository.GetAsync(productFromDb.CategoryId);
             var responseDto = _mapper.Map<Product, ProductResponseDto>(productFromDb);
 
-            return responseDto;
+            response.Data = responseDto;
+            return response;
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            _unitOfWork.ProductRepository.Remove(id);
+            var removed = _unitOfWork.ProductRepository.Remove(id);
+            if (!removed)
+            {
+                return false;
+            }
 
             await _unitOfWork.SaveAsync();
+
+            return true;
         }
     }
 }

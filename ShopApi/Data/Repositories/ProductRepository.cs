@@ -9,7 +9,7 @@ namespace ShopApi.Data.Repositories
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        public ProductRepository(AppDbContext context) : base(context)
+        public ProductRepository(DbContext context) : base(context)
         {
         }
 

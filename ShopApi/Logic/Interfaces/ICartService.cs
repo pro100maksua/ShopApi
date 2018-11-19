@@ -8,7 +8,7 @@ namespace ShopApi.Logic.Interfaces
     {
         Task<CartResponseDto> GetCartAsync(Guid userId);
         Task DeleteCartAsync(Guid userId);
-        Task AddToCartAsync(Guid productId, Guid userId);
-        Task RemoveFromCartAsync(Guid productId, Guid userId);
+        Task<bool> AddToCartAsync(Guid productId, Guid userId);
+        Task<bool> RemoveFromCartAsync(Guid productId, Guid userId);
     }
 }

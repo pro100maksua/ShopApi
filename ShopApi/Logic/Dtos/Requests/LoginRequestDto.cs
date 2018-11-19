@@ -1,11 +1,9 @@
 ﻿namespace ShopApi.Logic.Dtos.Requests
 {
-    public class RegisterRequest
+    public class LoginRequestDto
     {
         public string UserName { get; set; }
         
         public string Password { get; set; }
-        
-        public string ConfirmPassword { get; set; }
     }
 }

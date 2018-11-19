@@ -19,24 +19,27 @@ namespace ShopApi.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
+        public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequestDto loginRequestDto)
         {
-            var token = await _usersService.LoginAsync(loginRequest);
-
+            var token = await _usersService.LoginAsync(loginRequestDto);
             if (string.IsNullOrWhiteSpace(token))
             {
                 return NotFound();
             }
 
-            return Ok(token);
+            return token;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> RegisterAsync([FromBody]RegisterRequest registerRequest)
+        public async Task<ActionResult<string>> RegisterAsync([FromBody]RegisterRequestDto registerRequestDto)
         {
-            var result = await _usersService.RegisterAsync(registerRequest);
+            var result = await _usersService.RegisterAsync(registerRequestDto);
+            if (string.IsNullOrWhiteSpace(result.Data))
+            {
+                return BadRequest(result.Errors);
+            }
 
-            return Ok(result);
+            return result.Data;
         }
     }
 }

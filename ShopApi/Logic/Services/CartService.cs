@@ -14,7 +14,7 @@ namespace ShopApi.Logic.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-
+        
         public CartService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
@@ -24,12 +24,15 @@ namespace ShopApi.Logic.Services
         public async Task<CartResponseDto> GetCartAsync(Guid userId)
         {
             var items = await _unitOfWork.CartItemRepository.GetUserItemsAsync(userId);
-
-            var total = items.Select(i => i.Product.Cost * i.Count).Sum();
-
             var itemDtos = _mapper.Map<IEnumerable<CartItem>, IEnumerable<CartItemResponseDto>>(items);
+            var total = itemDtos.Select(i => i.Product.Cost * i.Count).Sum();
 
-            return new CartResponseDto { Items = itemDtos, Total = Math.Round(total, 2) };
+            var responseDto= new CartResponseDto
+            {
+                Items = itemDtos,
+                Total = total
+            };
+            return responseDto;
         }
 
         public async Task DeleteCartAsync(Guid userId)
@@ -41,11 +44,16 @@ namespace ShopApi.Logic.Services
             await _unitOfWork.SaveAsync();
         }
 
-        public async Task AddToCartAsync(Guid productId, Guid userId)
+        public async Task<bool> AddToCartAsync(Guid productId, Guid userId)
         {
+            var productExists = await _unitOfWork.ProductRepository.ExistsAsync(p => p.Id == productId);
+            if (!productExists)
+            {
+                return false;
+            }
+
             var item = await _unitOfWork.CartItemRepository.FindAsync(i =>
                 i.ProductId == productId && i.UserId == userId);
-
             if (item == null)
             {
                 item = new CartItem
@@ -57,30 +65,29 @@ namespace ShopApi.Logic.Services
 
                 await _unitOfWork.CartItemRepository.AddAsync(item);
             }
-
             item.Count++;
-
             await _unitOfWork.SaveAsync();
+
+            return true;
         }
 
-        public async Task RemoveFromCartAsync(Guid productId, Guid userId)
+        public async Task<bool> RemoveFromCartAsync(Guid productId, Guid userId)
         {
             var item = await _unitOfWork.CartItemRepository.FindAsync(i =>
                 i.ProductId == productId && i.UserId == userId);
-
             if (item == null)
             {
-                return;
+                return false;
             }
 
             item.Count--;
-
             if (item.Count == 0)
             {
                 _unitOfWork.CartItemRepository.Remove(item);
             }
-
             await _unitOfWork.SaveAsync();
+
+            return true;
         }
     }
 }

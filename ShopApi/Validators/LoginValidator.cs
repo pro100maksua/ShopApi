@@ -3,7 +3,7 @@ using ShopApi.Logic.Dtos.Requests;
 
 namespace ShopApi.Validators
 {
-    public class LoginValidator : AbstractValidator<LoginRequest>
+    public class LoginValidator : AbstractValidator<LoginRequestDto>
     {
         public LoginValidator()
         {

@@ -23,9 +23,9 @@ namespace ShopApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequest request)
         {
-            var responseDtos = await _categoriesService.GetAllAsync(request);
+            var categoryDtos = await _categoriesService.GetAllAsync(request);
 
-            return Ok(responseDtos);
+            return Ok(categoryDtos);
         }
 
         [HttpGet("{id}")]
@@ -33,7 +33,6 @@ namespace ShopApi.Controllers
         public async Task<ActionResult<CategoryResponseDto>> GetAsync([FromRoute] Guid id)
         {
             var responseDto = await _categoriesService.GetAsync(id);
-
             if (responseDto == null)
             {
                 return NotFound();
@@ -44,32 +43,43 @@ namespace ShopApi.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> PostAsync([FromBody] CategoryRequestDto requestDto)
+        public async Task<ActionResult<CategoryResponseDto>> PostAsync([FromBody] CategoryRequestDto requestDto)
         {
-            var responseDto = await _categoriesService.PostAsync(requestDto);
+            var response = await _categoriesService.PostAsync(requestDto);
+            if (response.Data == null)
+            {
+                return BadRequest(response.Errors);
+            }
 
-            return Ok(responseDto);
+            return response.Data;
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> PutAsync([FromRoute] Guid id, [FromBody] CategoryRequestDto requestDto)
+        public async Task<ActionResult<CategoryResponseDto>> PutAsync([FromRoute] Guid id, [FromBody] CategoryRequestDto requestDto)
         {
-            var responseDto = await _categoriesService.PutAsync(id, requestDto);
-
-            if (responseDto == null)
+            var response = await _categoriesService.PutAsync(id, requestDto);
+            if (response == null)
             {
                 return NotFound();
             }
+            if (response.Data == null)
+            {
+                return BadRequest(response.Errors);
+            }
 
-            return Ok(responseDto);
+            return response.Data;
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            await _categoriesService.DeleteAsync(id);
+            var deleted = await _categoriesService.DeleteAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
 
             return Ok();
         }

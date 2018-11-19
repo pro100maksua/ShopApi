@@ -12,7 +12,7 @@ namespace ShopApi.Data.Repositories
     {
         protected readonly DbSet<T> DbSet;
 
-        protected Repository(AppDbContext context)
+        protected Repository(DbContext context)
         {
             DbSet = context.Set<T>();
         }
@@ -44,6 +44,11 @@ namespace ShopApi.Data.Repositories
             return await DbSet.SingleOrDefaultAsync(filter);
         }
 
+        public async Task<bool> ExistsAsync(Expression<Func<T, bool>> filter)
+        {
+            return await DbSet.AnyAsync(filter);
+        }
+
         public async Task AddAsync(T entity)
         {
             await DbSet.AddAsync(entity);
@@ -54,14 +59,17 @@ namespace ShopApi.Data.Repositories
             await DbSet.AddRangeAsync(entities);
         }
 
-        public void Remove(Guid id)
+        public bool Remove(Guid id)
         {
             var entity = DbSet.Find(id);
-
-            if (entity != null)
+            if (entity == null)
             {
-                Remove(entity);
+                return false;
             }
+
+            Remove(entity);
+            return true;
+
         }
 
         public void Remove(T entity)

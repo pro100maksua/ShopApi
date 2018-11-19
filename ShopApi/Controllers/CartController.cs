@@ -39,7 +39,11 @@ namespace ShopApi.Controllers
         [HttpPut("add")]
         public async Task<IActionResult> AddToCartAsync(Guid productId)
         {
-            await _cartService.AddToCartAsync(productId, UserId);
+            var added = await _cartService.AddToCartAsync(productId, UserId);
+            if (!added)
+            {
+                return NotFound();
+            }
 
             return Ok();
         }
@@ -47,7 +51,11 @@ namespace ShopApi.Controllers
         [HttpPut("remove")]
         public async Task<IActionResult> RemoveFromCartAsync(Guid productId)
         {
-            await _cartService.RemoveFromCartAsync(productId, UserId);
+            var removed = await _cartService.RemoveFromCartAsync(productId, UserId);
+            if (!removed)
+            {
+                return NotFound();
+            }
 
             return Ok();
         }

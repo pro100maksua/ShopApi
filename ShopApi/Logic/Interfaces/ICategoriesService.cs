@@ -10,8 +10,8 @@ namespace ShopApi.Logic.Interfaces
     {
         Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequest request);
         Task<CategoryResponseDto> GetAsync(Guid id);
-        Task<CategoryResponseDto> PostAsync(CategoryRequestDto requestDto);
-        Task<CategoryResponseDto> PutAsync(Guid id, CategoryRequestDto requestDto);
-        Task DeleteAsync(Guid id);
+        Task<Result<CategoryResponseDto>> PostAsync(CategoryRequestDto requestDto);
+        Task<Result<CategoryResponseDto>> PutAsync(Guid id, CategoryRequestDto requestDto);
+        Task<bool> DeleteAsync(Guid id);
     }
 }

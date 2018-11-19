@@ -45,8 +45,17 @@ namespace ShopApi.Logic.Services
             return responseDto;
         }
 
-        public async Task<CategoryResponseDto> PostAsync(CategoryRequestDto requestDto)
+        public async Task<Result<CategoryResponseDto>> PostAsync(CategoryRequestDto requestDto)
         {
+            var response = new Result<CategoryResponseDto>();
+
+            var isDuplicate = await _unitOfWork.CategoryRepository.ExistsAsync(p => p.Name == requestDto.Name);
+            if (isDuplicate)
+            {
+                response.Errors.Add($"Category name '{requestDto.Name}' is already taken.");
+                return response;
+            }
+
             var category = _mapper.Map<CategoryRequestDto, Category>(requestDto);
             category.Id = Guid.NewGuid();
             
@@ -55,30 +64,45 @@ namespace ShopApi.Logic.Services
 
             var responseDto = _mapper.Map<Category, CategoryResponseDto>(category);
 
-            return responseDto;
+            response.Data = responseDto;
+            return response;
         }
 
-        public async Task<CategoryResponseDto> PutAsync(Guid id, CategoryRequestDto requestDto)
+        public async Task<Result<CategoryResponseDto>> PutAsync(Guid id, CategoryRequestDto requestDto)
         {
             var categoryFromDb = await _unitOfWork.CategoryRepository.GetAsync(id);
+            if (categoryFromDb == null)
+            {
+                return null;
+            }
 
-            if (categoryFromDb == null) return null;
+            var response = new Result<CategoryResponseDto>();
+            if (categoryFromDb.Name == requestDto.Name)
+            {
+                response.Errors.Add($"Category name '{requestDto.Name}' is already taken.");
+                return response;
+            }
 
             _mapper.Map(requestDto, categoryFromDb);
-
-           // _unitOfWork.CategoryRepository.Update(categoryFromDb);
             await _unitOfWork.SaveAsync();
 
             var responseDto = _mapper.Map<Category, CategoryResponseDto>(categoryFromDb);
 
-            return responseDto;
+            response.Data = responseDto;
+            return response;
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
-            _unitOfWork.CategoryRepository.Remove(id);
+            var removed = _unitOfWork.CategoryRepository.Remove(id);
+            if (!removed)
+            {
+                return false;
+            }
 
             await _unitOfWork.SaveAsync();
+
+            return true;
         }
     }
 }

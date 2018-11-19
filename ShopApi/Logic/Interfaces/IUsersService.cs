@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using ShopApi.Logic.Dtos.Requests;
+using ShopApi.Logic.Dtos.Responses;
 
 namespace ShopApi.Logic.Interfaces
 {
     public interface IUsersService
     {
-        Task<string> LoginAsync(LoginRequest loginRequest);
-        Task<IdentityResult> RegisterAsync(RegisterRequest registerRequest);
+        Task<string> LoginAsync(LoginRequestDto loginRequestDto);
+        Task<Result<string>> RegisterAsync(RegisterRequestDto registerRequestDto);
     }
 }

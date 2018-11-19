@@ -45,33 +45,41 @@ namespace ShopApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductResponseDto>> PostAsync([FromBody] ProductRequestDto requestDto)
         {
-            var responseDto = await _productsService.PostAsync(requestDto);
-            if (responseDto == null)
+            var response = await _productsService.PostAsync(requestDto);
+            if (response.Data == null)
             {
-                return BadRequest("Duplicate name.");
+                return BadRequest(response.Errors);
             }
 
-            return responseDto;
+            return response.Data;
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductResponseDto>> PutAsync([FromRoute] Guid id, [FromBody] ProductRequestDto requestDto)
         {
-            var responseDto = await _productsService.PutAsync(id, requestDto);
-            if (responseDto == null)
+            var response = await _productsService.PutAsync(id, requestDto);
+            if (response == null)
             {
                 return NotFound();
             }
+            if (response.Data == null)
+            {
+                return BadRequest(response.Errors);
+            }
 
-            return responseDto;
+            return response.Data;
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAsync([FromRoute] Guid id)
         {
-            await _productsService.DeleteAsync(id);
+            var deleted = await _productsService.DeleteAsync(id);
+            if (!deleted)
+            {
+                return NotFound();
+            }
 
             return Ok();
         }
