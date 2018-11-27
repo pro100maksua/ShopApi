@@ -71,7 +71,7 @@ namespace ShopApi
 
             services.AddTransient<ICategoriesService, CategoriesService>();
             services.AddTransient<IProductsService, ProductsService>();
-            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IAuthService, AuthService>();
             services.AddTransient<ICartService, CartService>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();

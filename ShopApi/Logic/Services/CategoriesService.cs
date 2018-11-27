@@ -37,8 +37,10 @@ namespace ShopApi.Logic.Services
         public async Task<CategoryResponseDto> GetAsync(Guid id)
         {
             var category = await _unitOfWork.CategoryRepository.GetAsync(id);
-
-            if (category == null) return null;
+            if (category == null) 
+	    {
+		return null;
+	    }
 
             var responseDto = _mapper.Map<Category, CategoryResponseDto>(category);
 

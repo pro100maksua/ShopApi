@@ -6,22 +6,21 @@ using ShopApi.Logic.Interfaces;
 
 namespace ShopApi.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
     [AllowAnonymous]
-    public class UsersController : ControllerBase
+    public class AuthController : ControllerBase
     {
-        private readonly IUsersService _usersService;
+        private readonly IAuthService _authService;
 
-        public UsersController(IUsersService usersService)
+        public AuthController(IAuthService authService)
         {
-            _usersService = usersService;
+            _authService = authService;
         }
 
-        [HttpPost("login")]
+        [HttpPost("api/login")]
         public async Task<ActionResult<string>> LoginAsync([FromBody] LoginRequestDto loginRequestDto)
         {
-            var token = await _usersService.LoginAsync(loginRequestDto);
+            var token = await _authService.LoginAsync(loginRequestDto);
             if (string.IsNullOrWhiteSpace(token))
             {
                 return NotFound();
@@ -30,10 +29,10 @@ namespace ShopApi.Controllers
             return token;
         }
 
-        [HttpPost("register")]
+        [HttpPost("api/register")]
         public async Task<ActionResult<string>> RegisterAsync([FromBody]RegisterRequestDto registerRequestDto)
         {
-            var result = await _usersService.RegisterAsync(registerRequestDto);
+            var result = await _authService.RegisterAsync(registerRequestDto);
             if (string.IsNullOrWhiteSpace(result.Data))
             {
                 return BadRequest(result.Errors);

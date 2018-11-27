@@ -19,5 +19,6 @@
 
   <PropertyGroup>
     <ProjectGuid>6992D29C-0BB6-43B5-B6F1-D8E0C84EB02E</ProjectGuid>
+    <UserSecretsId>3145bee0-7955-47d2-8363-28fb77d557ea</UserSecretsId>
   </PropertyGroup>
 </Project>

@@ -15,12 +15,12 @@ using ShopApi.Logic.Interfaces;
 
 namespace ShopApi.Logic.Services
 {
-    public class UsersService : IUsersService
+    public class AuthService : IAuthService
     {
         private readonly IConfiguration _config;
         private readonly UserManager<User> _userManager;
 
-        public UsersService(IConfiguration config, UserManager<User> userManager)
+        public AuthService(IConfiguration config, UserManager<User> userManager)
         {
             _config = config;
             _userManager = userManager;
@@ -77,7 +77,7 @@ namespace ShopApi.Logic.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
             };
-
+            
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 

@@ -59,7 +59,7 @@ namespace ShopApi.Logic.Services
 
             var product = _mapper.Map<ProductRequestDto, Product>(requestDto);
             product.Id = Guid.NewGuid();
-
+            
             await _unitOfWork.ProductRepository.AddAsync(product);
             await _unitOfWork.SaveAsync();
 

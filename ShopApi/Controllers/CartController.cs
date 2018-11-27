@@ -13,7 +13,7 @@ namespace ShopApi.Controllers
     {
         private readonly ICartService _cartService;
 
-        public Guid UserId => Guid.Parse(User.Identity.Name);
+        public Guid UserId => User == null ? Guid.Empty : Guid.Parse(User.Identity.Name);
 
         public CartController(ICartService cartService)
         {
