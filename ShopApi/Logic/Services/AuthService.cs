@@ -41,30 +41,27 @@ namespace ShopApi.Logic.Services
         {
             var user = new User
             {
-                Id = Guid.NewGuid(),
                 UserName = registerRequestDto.UserName,
                 Role = Role.Customer.ToString()
             };
 
             var registerResult = await _userManager.CreateAsync(user, registerRequestDto.Password);
 
-            var authResult = new Result<string>();
+            var result = new Result<string>();
             if (registerResult.Succeeded)
             {
-                authResult.Data = GetUserToken(user);
+                result.Data = GetUserToken(user);
             }
             else
             {
-                authResult.Errors = registerResult.Errors.Select(e => e.Description).ToList();
+                result.Errors = registerResult.Errors.Select(e => e.Description).ToList();
             }
 
-            return authResult;
+            return result;
         }
 
         private string GetUserToken(User user)
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
             var key = Encoding.ASCII.GetBytes(_config["Secret"]);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -77,7 +74,8 @@ namespace ShopApi.Logic.Services
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
             };
-            
+
+            var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 

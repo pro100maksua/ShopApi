@@ -4,7 +4,7 @@ using ShopApi.Data.Models;
 
 namespace ShopApi.Data.Interfaces
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IProductRepository : IRepositoryBase<Product>
     {
         Task<Product> GetWithCategoryAsync(Guid id);
     }

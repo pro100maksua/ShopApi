@@ -44,7 +44,7 @@ namespace ShopApi.Tests.ServiceTests
             _mapper.Setup(m => m.Map<IEnumerable<Category>, IEnumerable<CategoryResponseDto>>(categories))
                 .Returns(categoryDtos);
 
-            var result = await _categoriesService.GetAllAsync(new FetchRequest());
+            var result = await _categoriesService.GetAllAsync(new FetchRequestDto());
 
             Assert.That(result, Is.EqualTo(categoryDtos));
             _categoryRepository.Verify(pr =>

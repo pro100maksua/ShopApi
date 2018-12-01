@@ -31,7 +31,7 @@ namespace ShopApi.Tests.ControllerTests
             var result = await _cartController.GetCartAsync();
 
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.That((result as OkObjectResult)?.Value, Is.EqualTo(cart));
+            Assert.That(result.Value, Is.EqualTo(cart));
             _cartService.Verify(cs => cs.GetCartAsync(It.IsAny<Guid>()));
         }
 

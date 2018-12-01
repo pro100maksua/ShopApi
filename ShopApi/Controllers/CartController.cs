@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShopApi.Logic.Dtos.Responses;
 using ShopApi.Logic.Interfaces;
 
 namespace ShopApi.Controllers
@@ -21,11 +22,11 @@ namespace ShopApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCartAsync()
+        public async Task<ActionResult<CartResponseDto>> GetCartAsync()
         {
             var cartDto = await _cartService.GetCartAsync(UserId);
 
-            return Ok(cartDto);
+            return cartDto;
         }
 
         [HttpDelete]
@@ -36,8 +37,8 @@ namespace ShopApi.Controllers
             return Ok();
         }
 
-        [HttpPut("add")]
-        public async Task<IActionResult> AddToCartAsync(Guid productId)
+        [HttpPut("add/{productId}")]
+        public async Task<IActionResult> AddToCartAsync([FromRoute] Guid productId)
         {
             var added = await _cartService.AddToCartAsync(productId, UserId);
             if (!added)
@@ -48,8 +49,8 @@ namespace ShopApi.Controllers
             return Ok();
         }
 
-        [HttpPut("remove")]
-        public async Task<IActionResult> RemoveFromCartAsync(Guid productId)
+        [HttpPut("remove/{productId}")]
+        public async Task<IActionResult> RemoveFromCartAsync([FromRoute] Guid productId)
         {
             var removed = await _cartService.RemoveFromCartAsync(productId, UserId);
             if (!removed)

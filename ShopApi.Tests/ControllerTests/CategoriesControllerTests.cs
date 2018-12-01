@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -27,14 +26,14 @@ namespace ShopApi.Tests.ControllerTests
         [Test]
         public async Task GetAllAsync_WhenCalled_ReturnCategories()
         {
-            IEnumerable<CategoryResponseDto> categoryDtos = new List<CategoryResponseDto>();
-            _categoriesService.Setup(cs => cs.GetAllAsync(It.IsAny<FetchRequest>())).ReturnsAsync(categoryDtos);
+            var categoryDtos = new FetchResult<CategoryResponseDto>();
+            _categoriesService.Setup(cs => cs.GetAllAsync(It.IsAny<FetchRequestDto>())).ReturnsAsync(categoryDtos);
 
-            var result = await _categoriesController.GetAllAsync(new FetchRequest());
+            var result = await _categoriesController.GetAllAsync(new FetchRequestDto());
 
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.That((result as OkObjectResult)?.Value, Is.EqualTo(categoryDtos));
-            _categoriesService.Verify(cs => cs.GetAllAsync(It.IsAny<FetchRequest>()));
+            Assert.That(result.Value, Is.EqualTo(categoryDtos));
+            _categoriesService.Verify(cs => cs.GetAllAsync(It.IsAny<FetchRequestDto>()));
         }
 
         [Test]

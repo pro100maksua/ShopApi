@@ -8,11 +8,11 @@ using ShopApi.Data.Interfaces;
 
 namespace ShopApi.Data.Repositories
 {
-    public abstract class Repository<T> : IRepository<T> where T : class
+    public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         protected readonly DbSet<T> DbSet;
 
-        protected Repository(DbContext context)
+        protected RepositoryBase(DbContext context)
         {
             DbSet = context.Set<T>();
         }
@@ -47,6 +47,11 @@ namespace ShopApi.Data.Repositories
         public async Task<bool> ExistsAsync(Expression<Func<T, bool>> filter)
         {
             return await DbSet.AnyAsync(filter);
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await DbSet.CountAsync();
         }
 
         public async Task AddAsync(T entity)

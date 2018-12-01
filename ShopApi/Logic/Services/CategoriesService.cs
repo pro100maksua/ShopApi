@@ -22,25 +22,25 @@ namespace ShopApi.Logic.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync(FetchRequest request)
+        public async Task<FetchResult<CategoryResponseDto>> GetAllAsync(FetchRequestDto request)
         {
             var isSearchEmpty = string.IsNullOrWhiteSpace(request.SearchString);
             Expression<Func<Category, bool>> filter = c => isSearchEmpty || c.Name.Contains(request.SearchString);
-            
             var categories = await _unitOfWork.CategoryRepository.GetAllAsync(request.Skip, request.Take, filter);
 
             var categoryDtos = _mapper.Map<IEnumerable<Category>, IEnumerable<CategoryResponseDto>>(categories);
+            var count = await _unitOfWork.CategoryRepository.CountAsync();
 
-            return categoryDtos;
+            return new FetchResult<CategoryResponseDto> { Data = categoryDtos, Count = count };
         }
 
         public async Task<CategoryResponseDto> GetAsync(Guid id)
         {
             var category = await _unitOfWork.CategoryRepository.GetAsync(id);
-            if (category == null) 
-	    {
-		return null;
-	    }
+            if (category == null)
+            {
+                return null;
+            }
 
             var responseDto = _mapper.Map<Category, CategoryResponseDto>(category);
 
@@ -59,14 +59,13 @@ namespace ShopApi.Logic.Services
             }
 
             var category = _mapper.Map<CategoryRequestDto, Category>(requestDto);
-            category.Id = Guid.NewGuid();
-            
+
             await _unitOfWork.CategoryRepository.AddAsync(category);
             await _unitOfWork.SaveAsync();
 
             var responseDto = _mapper.Map<Category, CategoryResponseDto>(category);
-
             response.Data = responseDto;
+
             return response;
         }
 

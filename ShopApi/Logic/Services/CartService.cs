@@ -14,7 +14,7 @@ namespace ShopApi.Logic.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        
+
         public CartService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
@@ -24,15 +24,11 @@ namespace ShopApi.Logic.Services
         public async Task<CartResponseDto> GetCartAsync(Guid userId)
         {
             var items = await _unitOfWork.CartItemRepository.GetUserItemsAsync(userId);
+
             var itemDtos = _mapper.Map<IEnumerable<CartItem>, IEnumerable<CartItemResponseDto>>(items);
             var total = itemDtos.Select(i => i.Product.Cost * i.Count).Sum();
 
-            var responseDto= new CartResponseDto
-            {
-                Items = itemDtos,
-                Total = total
-            };
-            return responseDto;
+            return new CartResponseDto { Items = itemDtos, Total = total };
         }
 
         public async Task DeleteCartAsync(Guid userId)
@@ -58,13 +54,13 @@ namespace ShopApi.Logic.Services
             {
                 item = new CartItem
                 {
-                    Id = Guid.NewGuid(),
                     UserId = userId,
                     ProductId = productId
                 };
 
                 await _unitOfWork.CartItemRepository.AddAsync(item);
             }
+
             item.Count++;
             await _unitOfWork.SaveAsync();
 

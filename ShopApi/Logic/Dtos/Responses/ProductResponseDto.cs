@@ -9,7 +9,5 @@ namespace ShopApi.Logic.Dtos.Responses
         public string Name { get; set; }
 
         public double Cost { get; set; }
-
-        public CategoryResponseDto Category { get; set; }
     }
 }

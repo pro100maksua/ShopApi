@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace ShopApi.Data.Models
+namespace ShopApi.Logic.Dtos.Responses
 {
-    public class Product
+    public class ProductWithIncludeResponseDto
     {
         public Guid Id { get; set; }
 
@@ -12,8 +12,6 @@ namespace ShopApi.Data.Models
 
         public string Description { get; set; }
 
-        public Guid CategoryId { get; set; }
-
-        public Category Category { get; set; }
+        public CategoryResponseDto Category { get; set; }
     }
 }

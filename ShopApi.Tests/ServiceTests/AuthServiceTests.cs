@@ -1,12 +1,9 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Moq;
 using NUnit.Framework;
 using ShopApi.Data.Models;
@@ -17,7 +14,7 @@ using ShopApi.Logic.Services;
 namespace ShopApi.Tests.ServiceTests
 {
     [TestFixture]
-    public class UsersServiceTests
+    public class AuthServiceTests
     {
         private AuthService _authService;
         private Mock<UserManager<User>> _userManager;
@@ -40,7 +37,7 @@ namespace ShopApi.Tests.ServiceTests
 
             _authService = new AuthService(_config.Object, _userManager.Object);
 
-            _config.Setup(c=>c["Secret"]).Returns("Random secret string");
+            _config.Setup(c => c["Secret"]).Returns("Random secret string");
         }
 
         [Test]
@@ -76,20 +73,5 @@ namespace ShopApi.Tests.ServiceTests
             _userManager.Verify(pr => pr.FindByNameAsync(login.UserName));
             _userManager.Verify(um => um.CheckPasswordAsync(user, login.Password));
         }
-
-        //[Test]
-        //public async Task GetAsync_ValidId_ReturnCategoryDto()
-        //{
-        //    var category = new Category();
-        //    var categoryDto = new CategoryResponseDto();
-
-        //    _userManager.Setup(pr => pr.GetAsync(It.IsAny<Guid>())).ReturnsAsync(category);
-        //    _mapper.Setup(m => m.Map<Category, CategoryResponseDto>(category)).Returns(categoryDto);
-
-        //    var result = await _authService.GetAsync(Guid.NewGuid());
-
-        //    Assert.That(result, Is.EqualTo(categoryDto));
-        //    _userManager.Verify(pr => pr.GetAsync(It.IsAny<Guid>()));
-        //}
     }
 }

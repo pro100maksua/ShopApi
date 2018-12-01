@@ -44,7 +44,7 @@ namespace ShopApi.Tests.ServiceTests
             _mapper.Setup(m => m.Map<IEnumerable<Product>, IEnumerable<ProductResponseDto>>(products))
                 .Returns(productDtos);
 
-            var result = await _productsService.GetAllAsync(new FetchRequest());
+            var result = await _productsService.GetAllAsync(new FetchRequestDto());
 
             Assert.That(result, Is.EqualTo(productDtos));
             _productRepository.Verify(pr =>

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -27,14 +26,14 @@ namespace ShopApi.Tests.ControllerTests
         [Test]
         public async Task GetAllAsync_WhenCalled_ReturnProducts()
         {
-            IEnumerable<ProductResponseDto> productDtos = new List<ProductResponseDto>();
-            _productsService.Setup(ps => ps.GetAllAsync(It.IsAny<FetchRequest>())).ReturnsAsync(productDtos);
+            var productDtos = new FetchResult<ProductResponseDto>();
+            _productsService.Setup(ps => ps.GetAllAsync(It.IsAny<FetchRequestDto>())).ReturnsAsync(productDtos);
 
-            var result = await _productsController.GetAllAsync(new FetchRequest());
+            var result = await _productsController.GetAllAsync(new FetchRequestDto());
 
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.That((result as OkObjectResult)?.Value, Is.EqualTo(productDtos));
-            _productsService.Verify(ps => ps.GetAllAsync(It.IsAny<FetchRequest>()));
+            Assert.That(result.Value, Is.EqualTo(productDtos));
+            _productsService.Verify(ps => ps.GetAllAsync(It.IsAny<FetchRequestDto>()));
         }
 
         [Test]
@@ -49,7 +48,7 @@ namespace ShopApi.Tests.ControllerTests
         [Test]
         public async Task GetAsync_ValidId_ReturnProduct()
         {
-            var productDto = new ProductResponseDto();
+            var productDto = new ProductWithIncludeResponseDto();
             _productsService.Setup(ps => ps.GetAsync(It.IsAny<Guid>())).ReturnsAsync(productDto);
 
             var result = await _productsController.GetAsync(Guid.NewGuid());
@@ -61,7 +60,7 @@ namespace ShopApi.Tests.ControllerTests
         [Test]
         public async Task PostAsync_DuplicateName_ReturnBadRequest()
         {
-            var product = new Result<ProductResponseDto>();
+            var product = new Result<ProductWithIncludeResponseDto>();
             _productsService.Setup(ps => ps.PostAsync(It.IsAny<ProductRequestDto>())).ReturnsAsync(product);
 
             var result = await _productsController.PostAsync(new ProductRequestDto());
@@ -73,7 +72,7 @@ namespace ShopApi.Tests.ControllerTests
         [Test]
         public async Task PostAsync_WhenCalled_ReturnCreatedProduct()
         {
-            var product = new Result<ProductResponseDto>();
+            var product = new Result<ProductWithIncludeResponseDto>();
             _productsService.Setup(ps => ps.PostAsync(It.IsAny<ProductRequestDto>())).ReturnsAsync(product);
 
             var result = await _productsController.PostAsync(new ProductRequestDto());
@@ -95,7 +94,7 @@ namespace ShopApi.Tests.ControllerTests
         public async Task PutAsync_DuplicateName_ReturnBadRequest()
         {
             _productsService.Setup(ps => ps.PutAsync(It.IsAny<Guid>(), It.IsAny<ProductRequestDto>()))
-                .ReturnsAsync(new Result<ProductResponseDto>());
+                .ReturnsAsync(new Result<ProductWithIncludeResponseDto>());
 
             var result = await _productsController.PutAsync(Guid.NewGuid(), new ProductRequestDto());
 
@@ -106,7 +105,7 @@ namespace ShopApi.Tests.ControllerTests
         [Test]
         public async Task PutAsync_WhenCalled_ReturnUpdatedProduct()
         {
-            var product = new Result<ProductResponseDto>();
+            var product = new Result<ProductWithIncludeResponseDto>();
             _productsService.Setup(ps => ps.PutAsync(It.IsAny<Guid>(), It.IsAny<ProductRequestDto>()))
                 .ReturnsAsync(product);
 

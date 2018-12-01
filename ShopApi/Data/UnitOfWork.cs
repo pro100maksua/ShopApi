@@ -8,14 +8,14 @@ namespace ShopApi.Data
     {
         private readonly AppDbContext _context;
         private ICategoryRepository _categoryRepository;
-        private IProductRepository _productRepository;
+        private IProductRepository _productRepositoryBase;
         private ICartItemRepository _cartItemRepository;
 
         public ICategoryRepository CategoryRepository =>
             _categoryRepository ?? (_categoryRepository = new CategoryRepository(_context));
 
         public IProductRepository ProductRepository =>
-            _productRepository ?? (_productRepository = new ProductRepository(_context));
+            _productRepositoryBase ?? (_productRepositoryBase = new ProductRepository(_context));
 
         public ICartItemRepository CartItemRepository =>
             _cartItemRepository ?? (_cartItemRepository = new CartItemRepository(_context));

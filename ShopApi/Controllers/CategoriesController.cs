@@ -21,11 +21,11 @@ namespace ShopApi.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequest request)
+        public async Task<ActionResult<FetchResult<CategoryResponseDto>>> GetAllAsync([FromQuery] FetchRequestDto request)
         {
             var categoryDtos = await _categoriesService.GetAllAsync(request);
 
-            return Ok(categoryDtos);
+            return categoryDtos;
         }
 
         [HttpGet("{id}")]

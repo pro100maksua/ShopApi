@@ -6,7 +6,7 @@ using ShopApi.Data.Models;
 
 namespace ShopApi.Data
 {
-    public class UserStore : IUserStore<User>, IUserPasswordStore<User>
+    public class UserStore : IUserPasswordStore<User>
     {
         private readonly AppDbContext _context;
 

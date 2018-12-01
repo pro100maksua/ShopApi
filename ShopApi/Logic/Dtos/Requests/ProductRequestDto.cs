@@ -7,6 +7,8 @@ namespace ShopApi.Logic.Dtos.Requests
         public string Name { get; set; }
         
         public double Cost { get; set; }
+
+        public string Description { get; set; }
         
         public Guid CategoryId { get; set; }
     }

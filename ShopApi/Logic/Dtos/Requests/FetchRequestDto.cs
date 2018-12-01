@@ -1,6 +1,6 @@
 ﻿namespace ShopApi.Logic.Dtos.Requests
 {
-    public class FetchRequest
+    public class FetchRequestDto
     {
         public int Skip { get; set; }
 

@@ -7,7 +7,7 @@ using ShopApi.Data.Models;
 
 namespace ShopApi.Data.Repositories
 {
-    public class ProductRepository : Repository<Product>, IProductRepository
+    public class ProductRepository : RepositoryBase<Product>, IProductRepository
     {
         public ProductRepository(DbContext context) : base(context)
         {

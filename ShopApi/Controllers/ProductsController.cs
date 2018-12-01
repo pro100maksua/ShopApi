@@ -21,16 +21,16 @@ namespace ShopApi.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllAsync([FromQuery] FetchRequest request)
+        public async Task<ActionResult<FetchResult<ProductResponseDto>>> GetAllAsync([FromQuery] FetchRequestDto request)
         {
             var productDtos = await _productsService.GetAllAsync(request);
 
-            return Ok(productDtos);
+            return productDtos;
         }
 
         [HttpGet("{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ProductResponseDto>> GetAsync([FromRoute] Guid id)
+        public async Task<ActionResult<ProductWithIncludeResponseDto>> GetAsync([FromRoute] Guid id)
         {
             var responseDto = await _productsService.GetAsync(id);
             if (responseDto == null)
@@ -43,7 +43,7 @@ namespace ShopApi.Controllers
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<ProductResponseDto>> PostAsync([FromBody] ProductRequestDto requestDto)
+        public async Task<ActionResult<ProductWithIncludeResponseDto>> PostAsync([FromBody] ProductRequestDto requestDto)
         {
             var response = await _productsService.PostAsync(requestDto);
             if (response.Data == null)
@@ -56,7 +56,7 @@ namespace ShopApi.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<ProductResponseDto>> PutAsync([FromRoute] Guid id, [FromBody] ProductRequestDto requestDto)
+        public async Task<ActionResult<ProductWithIncludeResponseDto>> PutAsync([FromRoute] Guid id, [FromBody] ProductRequestDto requestDto)
         {
             var response = await _productsService.PutAsync(id, requestDto);
             if (response == null)
